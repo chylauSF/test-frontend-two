@@ -1,0 +1,7 @@
+name: "Update Knit"
+
+description: "Update Knit"
+
+runs:
+  using: "node12"
+  main: "index.js"
