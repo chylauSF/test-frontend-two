@@ -1,7 +1,20 @@
 name: "Update Knit"
 
-description: "Update Knit"
+description: "This workflow grabs the latest knit Release and creates a PR based on the update of that release"
+
+inputs:
+  released_repo:
+    description: "JS Library that needs to be updated. ie. knit, mode"
+    required: true
+  owner: 
+    default: "stitchfix"
+  repo-token:
+    description: "Token with permissions to do repo things"
+    required: true
+  
+
 
 runs:
   using: "node12"
-  main: "index.js"
+  main: "dist/index.js"
+

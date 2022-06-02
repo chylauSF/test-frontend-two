@@ -1,13 +1,19 @@
 name: Trigger Knit
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   action:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
-      - name: start-update
+      - name: get-latest-release
         uses: ./.github/actions/update-knit
+        id: release
+        with:
+          repo-token: ${{secrets.G_ACCESS_TOKEN}}
+          owner: "facebook"
+          released_repo: "react"
