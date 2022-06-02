@@ -1,7 +1,6 @@
 name: Trigger Knit
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   action:
