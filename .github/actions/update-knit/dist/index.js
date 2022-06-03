@@ -10155,20 +10155,36 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(9684);
 const github = __nccwpck_require__(7484);
 const exec = __nccwpck_require__(33);
+const fs = __nccwpck_require__(7147);
+
+const repo = core.getInput("released_repo")
+const owner = core.getInput("owner")
+const token = core.getInput("repo-token");
+const octokit = github.getOctokit(token);
+const rootPath = core.getInput("root_path")
+
+const runPackageUpdate = async (releaseTag) => {
+  console.log("Root PATH:", rootPath)
+  const path = `${rootPath}/yarn.lock`;
+  if (fs.existsSync(path)) {
+    // path exists
+    console.log("exists:", path);
+    await exec.exec(`yarn upgrade ${repo}@v${releaseTag}`)
+  } else {
+    console.log("DOES NOT exist:", path);
+    await exec.exec(`npm install ${repo}@${releaseTag}`)
+  }
+
+}
 
 async function run() {
   const runDate = Date.now();
 
   try {
-    const repo = core.getInput("released_repo")
-    const owner = core.getInput("owner")
-    const token = core.getInput("repo-token");
 
     console.log('======================================');
     console.log(`       ${repo} Updater!               `);
     console.log('======================================');
-
-    const octokit = github.getOctokit(token);
 
     const {
       data: { tag_name },
@@ -10183,14 +10199,12 @@ async function run() {
 
     const branchName = `${repo}-upgrade-to-${latestReleaseTag}-${runDate}`
 
-    console.log("RUN DATE", runDate)
-
     await exec.exec('git config --global user.email "christine.chois@stitchfix.com"')
     await exec.exec('git config --global user.name "chylauSF"')
 
     await exec.exec('git pull origin main')
     await exec.exec(`git checkout -b ${branchName}`)
-    await exec.exec(`npm install ${repo}@${latestReleaseTag}`)
+    runPackageUpdate(latestReleaseTag)
     await exec.exec("git add .")
     await exec.exec(`git commit -m "Upgrade ${repo} to ${latestReleaseTag}"`)
     await exec.exec(`git push --set-upstream origin ${branchName}`)

@@ -16,3 +16,4 @@ jobs:
           repo-token: ${{secrets.G_ACCESS_TOKEN}}
           owner: "facebook"
           released_repo: "react"
+          root_path: ${{github.workspace}}

@@ -11,8 +11,9 @@ inputs:
   repo-token:
     description: "Token with permissions to do repo things"
     required: true
-  
-
+  root_path:
+    description: "Root Path to this project"
+    required: true
 
 runs:
   using: "node12"
