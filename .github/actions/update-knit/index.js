@@ -9,26 +9,12 @@ const owner = core.getInput("owner")
 const token = core.getInput("repo-token");
 const octokit = github.getOctokit(token);
 const rootPath = core.getInput("root_path")
-
-const runPackageUpdate = async (releaseTag) => {
-  console.log("Root PATH:", rootPath)
-  const path = `${rootPath}/yarn.lock`;
-  if (fs.existsSync(path)) {
-    // path exists
-    console.log("exists:", path);
-    await exec.exec(`yarn upgrade ${repo}@v${releaseTag}`)
-  } else {
-    console.log("DOES NOT exist:", path);
-    await exec.exec(`npm install ${repo}@${releaseTag}`)
-  }
-
-}
+const yarnPath = `${rootPath}/yarn.lock`;
 
 async function run() {
   const runDate = Date.now();
 
   try {
-
     console.log('======================================');
     console.log(`       ${repo} Updater!               `);
     console.log('======================================');
@@ -51,7 +37,12 @@ async function run() {
 
     await exec.exec('git pull origin main')
     await exec.exec(`git checkout -b ${branchName}`)
-    runPackageUpdate(latestReleaseTag)
+
+    if (fs.existsSync(yarnPath)) {
+      await exec.exec(`yarn upgrade ${repo}@v${latestReleaseTag}`)
+    } else {
+      await exec.exec(`npm install ${repo}@${latestReleaseTag}`)
+    }
     await exec.exec("git add .")
     await exec.exec(`git commit -m "Upgrade ${repo} to ${latestReleaseTag}"`)
     await exec.exec(`git push --set-upstream origin ${branchName}`)
